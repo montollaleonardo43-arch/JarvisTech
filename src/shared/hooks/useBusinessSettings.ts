@@ -5,6 +5,8 @@ import type { BusinessSettings } from '@/shared/types'
 let cachedSettings: BusinessSettings | null = null
 let pendingPromise: Promise<BusinessSettings | null> | null = null
 
+const listeners = new Set<() => void>()
+
 function fetchSettings(): Promise<BusinessSettings | null> {
   if (cachedSettings) return Promise.resolve(cachedSettings)
   if (pendingPromise) return pendingPromise
@@ -23,13 +25,26 @@ function fetchSettings(): Promise<BusinessSettings | null> {
   return pendingPromise
 }
 
+export function invalidateBusinessSettings() {
+  cachedSettings = null
+  pendingPromise = null
+  listeners.forEach((listener) => listener())
+}
+
 export function useBusinessSettings() {
   const [settings, setSettings] = useState<BusinessSettings | null>(cachedSettings)
 
   useEffect(() => {
-    fetchSettings().then((data) => {
-      if (data) setSettings(data)
-    })
+    const update = () => {
+      fetchSettings().then((data) => {
+        if (data) setSettings(data)
+      })
+    }
+    listeners.add(update)
+    update()
+    return () => {
+      listeners.delete(update)
+    }
   }, [])
 
   return settings

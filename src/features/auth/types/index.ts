@@ -1,6 +1,13 @@
 export interface LoginRequest {
   email: string
   password: string
+  rememberMe?: boolean
+}
+
+export interface RegisterRequest {
+  name: string
+  email: string
+  password: string
 }
 
 export interface LoginResponse {
@@ -15,11 +22,4 @@ export interface UserSummary {
   name: string
   email: string
   role: string
-}
-
-export interface AuthState {
-  user: UserSummary | null
-  token: string | null
-  isAuthenticated: boolean
-  isLoading: boolean
 }

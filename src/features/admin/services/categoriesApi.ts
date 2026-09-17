@@ -6,10 +6,6 @@ export const categoriesApi = {
     return api.get<PaginatedResponse<Category>>('/categories', { params: { page, size } })
   },
 
-  getById(id: number) {
-    return api.get<Category>(`/categories/${id}`)
-  },
-
   create(data: { name: string; description?: string; icon?: string }) {
     return api.post('/categories', data)
   },

@@ -15,7 +15,6 @@ interface InventoryForm {
 interface InventoryStepProps {
   form: InventoryForm
   onUpdate: (field: keyof InventoryForm, value: string | boolean) => void
-  onSaveDraft: () => void
   onBack: () => void
   onNext: () => void
 }
@@ -23,7 +22,6 @@ interface InventoryStepProps {
 export default function InventoryStep({
   form,
   onUpdate,
-  onSaveDraft,
   onBack,
   onNext,
 }: InventoryStepProps) {
@@ -101,7 +99,6 @@ export default function InventoryStep({
 
       <FormActions
         onBack={onBack}
-        onSkip={onSaveDraft}
         onNext={onNext}
         nextDisabled={!canProceed}
       />

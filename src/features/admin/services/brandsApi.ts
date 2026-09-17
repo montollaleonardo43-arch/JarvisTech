@@ -6,10 +6,6 @@ export const brandsApi = {
     return api.get<PaginatedResponse<Brand>>('/brands', { params: { page, size } })
   },
 
-  getById(id: number) {
-    return api.get<Brand>(`/brands/${id}`)
-  },
-
   create(data: { name: string; logo?: string }) {
     return api.post('/brands', data)
   },

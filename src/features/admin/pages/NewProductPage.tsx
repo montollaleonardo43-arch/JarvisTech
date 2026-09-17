@@ -131,18 +131,6 @@ export default function NewProductPage() {
     setForm((prev) => ({ ...prev, sku: generateSku() }))
   }
 
-  const handleNewCategory = () => {
-    alert('Funcionalidad pendiente: Crear nueva categoria')
-  }
-
-  const handleNewBrand = () => {
-    alert('Funcionalidad pendiente: Crear nueva marca')
-  }
-
-  const handleSaveDraft = () => {
-    alert('Borrador guardado (simulado)')
-  }
-
   const addImages = (files: FileList | File[]) => {
     const newImages: ImagePreview[] = Array.from(files)
       .filter((file) => file.type.startsWith('image/'))
@@ -244,9 +232,6 @@ export default function NewProductPage() {
             brands={brands}
             onUpdate={updateField}
             onGenerateSku={handleGenerateSku}
-            onNewCategory={handleNewCategory}
-            onNewBrand={handleNewBrand}
-            onSaveDraft={handleSaveDraft}
             onBack={() => window.history.back()}
             onNext={() => setCurrentStep(1)}
           />
@@ -256,7 +241,6 @@ export default function NewProductPage() {
           <InventoryStep
             form={form}
             onUpdate={updateField}
-            onSaveDraft={handleSaveDraft}
             onBack={() => setCurrentStep(0)}
             onNext={() => setCurrentStep(2)}
           />
@@ -268,7 +252,6 @@ export default function NewProductPage() {
             onAddImages={addImages}
             onRemoveImage={removeImage}
             onSetPrimary={setPrimaryImage}
-            onSaveDraft={handleSaveDraft}
             onBack={() => setCurrentStep(1)}
             onFinish={handleFinish}
             loading={isSubmitting}

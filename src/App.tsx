@@ -5,6 +5,10 @@ import PublicLayout from './shared/components/layout/PublicLayout'
 import ProtectedRoute from './features/auth/components/ProtectedRoute'
 import AdminLayout from './features/admin/components/AdminLayout'
 import LoginPage from './features/auth/pages/LoginPage'
+import RegisterPage from './features/auth/pages/RegisterPage'
+import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage'
+import ResetPasswordPage from './features/auth/pages/ResetPasswordPage'
+import AccountPage from './features/account/pages/AccountPage'
 import DashboardPage from './features/admin/pages/DashboardPage'
 import ProductsPage from './features/admin/pages/ProductsPage'
 import NewProductPage from './features/admin/pages/NewProductPage'
@@ -35,9 +39,21 @@ function App() {
             <Route path="/services" element={<PublicServicesPage />} />
             <Route path="/services/:id" element={<ServiceDetailPage />} />
             <Route path="/promotions" element={<PromotionsPublicPage />} />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute requireAdmin={false}>
+                  <AccountPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           <Route path="/admin/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           <Route
             element={

@@ -13,7 +13,4 @@ export const servicesApi = {
 
   search: (q: string, page = 0, size = 20) =>
     api.get<PaginatedResponse<Service>>('/services/search', { params: { q, page, size } }),
-
-  getByCategory: (categoryId: number, page = 0, size = 20) =>
-    api.get<PaginatedResponse<Service>>(`/services/category/${categoryId}`, { params: { page, size } }),
 }

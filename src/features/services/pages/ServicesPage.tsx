@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Wrench, Clock, Shield, ArrowRight, Wrench as WrenchIcon } from 'lucide-react'
+import { Wrench, Clock, Shield, ArrowRight } from 'lucide-react'
 import { servicesApi } from '../services/publicServicesApi'
 import { useRevealOnScroll } from '@/shared/hooks/useRevealOnScroll'
 import type { Service } from '@/shared/types'
@@ -42,7 +42,7 @@ export default function ServicesPage() {
           ) : services.length === 0 ? (
             <div className="text-center py-2xl glass rounded-xl">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mx-auto mb-md">
-                <WrenchIcon size={28} className="text-text-tertiary" />
+                <Wrench size={28} className="text-text-tertiary" />
               </div>
               <p className="text-text-secondary text-body-large">No hay servicios disponibles aún.</p>
             </div>

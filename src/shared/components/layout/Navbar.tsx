@@ -145,7 +145,7 @@ export default function Navbar() {
             to="/admin/login"
             className="text-text-tertiary hover:text-text-secondary text-caption transition-colors"
           >
-            Admin
+            Mi Cuenta
           </Link>
           <a
             href={whatsappUrl}
@@ -207,7 +207,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link to="/admin/login" className="block py-3 text-sm font-medium text-text-tertiary">
-              Admin
+              Mi Cuenta
             </Link>
           </div>
         </div>

@@ -1,8 +1,9 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
-import { Save, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Save, AlertCircle, CheckCircle2, Plus, Trash2 } from 'lucide-react'
 import { settingsApi } from '../services/settingsApi'
 import SectionCard from '@/shared/components/ui/SectionCard'
 import SettingsImageUploader from '../components/SettingsImageUploader'
+import { invalidateBusinessSettings } from '@/shared/hooks/useBusinessSettings'
 import type { BusinessSettings } from '@/shared/types'
 
 type SettingsField = keyof BusinessSettings
@@ -13,7 +14,10 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
-  const [uploadingField, setUploadingField] = useState<string | null>(null)
+  const [pending, setPending] = useState<Record<'logoLight' | 'heroImage', { file: File; preview: string } | null>>({
+    logoLight: null,
+    heroImage: null,
+  })
 
   useEffect(() => {
     settingsApi.get().then(({ data }) => {
@@ -36,7 +40,21 @@ export default function SettingsPage() {
     setSaving(true)
     setError('')
     try {
-      await settingsApi.update(settings)
+      const payload = { ...settings }
+      for (const field of ['logoLight', 'heroImage'] as const) {
+        const staged = pending[field]
+        if (staged) {
+          const { data: res } = await settingsApi.uploadImage(field, staged.file)
+          payload[field] = res.data
+          setSettings((prev) => ({ ...prev, [field]: res.data }))
+        }
+      }
+      await settingsApi.update(payload)
+      setPending((prev) => {
+        Object.values(prev).forEach((staged) => staged && URL.revokeObjectURL(staged.preview))
+        return { logoLight: null, heroImage: null }
+      })
+      invalidateBusinessSettings()
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch {
@@ -46,22 +64,54 @@ export default function SettingsPage() {
   }
 
   const handleUploadImage = useCallback(async (field: 'logoLight' | 'heroImage', file: File) => {
-    setUploadingField(field)
+    const preview = URL.createObjectURL(file)
+    setPending((prev) => {
+      const old = prev[field]
+      if (old) URL.revokeObjectURL(old.preview)
+      return { ...prev, [field]: { file, preview } }
+    })
+    setSaved(false)
     setError('')
-    try {
-      const { data: res } = await settingsApi.uploadImage(field, file)
-      setSettings((prev) => ({ ...prev, [field]: res.data }))
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-    } catch {
-      setError('Error al subir la imagen')
-    }
-    setUploadingField(null)
   }, [])
 
-  const handleRemoveImage = useCallback(async (field: 'logoLight' | 'heroImage') => {
-    setSettings((prev) => ({ ...prev, [field]: null }))
+  const handleRemoveImage = useCallback((field: 'logoLight' | 'heroImage') => {
+    const staged = pending[field]
+    if (staged) {
+      URL.revokeObjectURL(staged.preview)
+      setPending((prev) => ({ ...prev, [field]: null }))
+    } else {
+      setSettings((prev) => ({ ...prev, [field]: null }))
+    }
     setSaved(false)
+    setError('')
+  }, [pending])
+
+  const handleBenefitChange = useCallback((index: number, field: 'title' | 'description', value: string) => {
+    setSettings((prev) => {
+      const current = Array.isArray(prev.benefits) ? prev.benefits : []
+      const next = current.map((b, i) => (i === index ? { ...b, [field]: value } : b))
+      return { ...prev, benefits: next }
+    })
+    setSaved(false)
+    setError('')
+  }, [])
+
+  const handleAddBenefit = useCallback(() => {
+    setSettings((prev) => ({
+      ...prev,
+      benefits: [...(Array.isArray(prev.benefits) ? prev.benefits : []), { title: '', description: '' }],
+    }))
+    setSaved(false)
+    setError('')
+  }, [])
+
+  const handleRemoveBenefit = useCallback((index: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      benefits: (Array.isArray(prev.benefits) ? prev.benefits : []).filter((_, i) => i !== index),
+    }))
+    setSaved(false)
+    setError('')
   }, [])
 
   const inputClass = "w-full glass-input rounded-xl py-2.5 px-4 text-white text-sm"
@@ -102,10 +152,9 @@ export default function SettingsPage() {
         <SectionCard title="Logo del Sitio" description="Logo que se muestra en el navbar y pie de pagina">
           <SettingsImageUploader
             label="Logo"
-            currentUrl={settings.logoLight || null}
+            currentUrl={pending.logoLight?.preview ?? (settings.logoLight || null)}
             onUpload={(file) => handleUploadImage('logoLight', file)}
             onRemove={() => handleRemoveImage('logoLight')}
-            loading={uploadingField === 'logoLight'}
           />
         </SectionCard>
 
@@ -122,11 +171,63 @@ export default function SettingsPage() {
           </div>
           <SettingsImageUploader
             label="Imagen del Hero"
-            currentUrl={settings.heroImage || null}
+            currentUrl={pending.heroImage?.preview ?? (settings.heroImage || null)}
             onUpload={(file) => handleUploadImage('heroImage', file)}
             onRemove={() => handleRemoveImage('heroImage')}
-            loading={uploadingField === 'heroImage'}
           />
+        </SectionCard>
+
+        <SectionCard title="¿Por qué elegirnos?" description="Los beneficios que se muestran en la seccion principal del sitio">
+          <div className="space-y-lg">
+            {(Array.isArray(settings.benefits) ? settings.benefits : []).map((benefit, i) => (
+              <div key={i} className="glass rounded-xl p-md">
+                <div className="flex items-center justify-between mb-md">
+                  <span className="text-text-secondary text-small">Beneficio {i + 1}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveBenefit(i)}
+                    className="text-error hover:text-error/80 text-xs font-medium transition-colors flex items-center gap-1"
+                  >
+                    <Trash2 size={14} />
+                    Quitar
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 tablet:grid-cols-2 gap-md">
+                  <div>
+                    <label className={labelClass}>Titulo</label>
+                    <input
+                      type="text"
+                      value={benefit.title}
+                      onChange={(e) => handleBenefitChange(i, 'title', e.target.value)}
+                      placeholder="Diagnostico honesto"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Descripcion</label>
+                    <textarea
+                      value={benefit.description}
+                      onChange={(e) => handleBenefitChange(i, 'description', e.target.value)}
+                      rows={2}
+                      placeholder="Explicamos el problema antes de cualquier reparacion..."
+                      className={`${inputClass} resize-none`}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={handleAddBenefit}
+              className="flex items-center gap-2 glass hover:bg-white/10 text-white text-sm px-4 py-2.5 rounded-xl transition-colors"
+            >
+              <Plus size={16} />
+              Agregar beneficio
+            </button>
+            <p className="text-text-tertiary text-caption">
+              Los iconos se asignan automaticamente en el sitio. Si dejas la lista vacia se usan los beneficios por defecto.
+            </p>
+          </div>
         </SectionCard>
 
         <SectionCard title="Informacion General" description="Datos principales de tu negocio">

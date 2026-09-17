@@ -14,7 +14,6 @@ interface ImagesStepProps {
   onAddImages: (files: FileList | File[]) => void
   onRemoveImage: (id: string) => void
   onSetPrimary: (id: string) => void
-  onSaveDraft: () => void
   onBack: () => void
   onFinish: () => void
   loading?: boolean
@@ -25,7 +24,6 @@ export default function ImagesStep({
   onAddImages,
   onRemoveImage,
   onSetPrimary,
-  onSaveDraft,
   onBack,
   onFinish,
   loading = false,
@@ -46,7 +44,6 @@ export default function ImagesStep({
 
       <FormActions
         onBack={onBack}
-        onSkip={onSaveDraft}
         onNext={onFinish}
         nextLabel="Finalizar"
         loading={loading}

@@ -8,7 +8,8 @@ interface AuthContextType {
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<UserSummary>
+  register: (name: string, email: string, password: string) => Promise<UserSummary>
   logout: () => void
 }
 
@@ -30,10 +31,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = useCallback(async (email: string, password: string) => {
-    const response = await authService.login({ email, password })
+  const login = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
+    const response = await authService.login({ email, password, rememberMe })
     setToken(response.token)
     setUser(response.user)
+    return response.user
+  }, [])
+
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    const response = await authService.register({ name, email, password })
+    setToken(response.token)
+    setUser(response.user)
+    return response.user
   }, [])
 
   const logout = useCallback(() => {
@@ -54,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!token && !!user,
         isLoading,
         login,
+        register,
         logout,
       }}
     >

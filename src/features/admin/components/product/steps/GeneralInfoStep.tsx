@@ -21,9 +21,6 @@ interface GeneralInfoStepProps {
   brands: { value: string; label: string }[]
   onUpdate: (field: keyof GeneralInfoForm, value: string) => void
   onGenerateSku: () => void
-  onNewCategory: () => void
-  onNewBrand: () => void
-  onSaveDraft: () => void
   onBack: () => void
   onNext: () => void
 }
@@ -34,9 +31,6 @@ export default function GeneralInfoStep({
   brands,
   onUpdate,
   onGenerateSku,
-  onNewCategory,
-  onNewBrand,
-  onSaveDraft,
   onBack,
   onNext,
 }: GeneralInfoStepProps) {
@@ -87,15 +81,6 @@ export default function GeneralInfoStep({
               onChange={(e) => onUpdate('categoryId', e.target.value)}
               options={categories}
               placeholder="Seleccionar categoria..."
-              action={
-                <button
-                  type="button"
-                  onClick={onNewCategory}
-                  className="text-primary-400 hover:text-primary-300 text-caption font-medium transition-colors"
-                >
-                  + Nueva
-                </button>
-              }
             />
             <SelectField
               label="Marca"
@@ -103,15 +88,6 @@ export default function GeneralInfoStep({
               onChange={(e) => onUpdate('brandId', e.target.value)}
               options={brands}
               placeholder="Seleccionar marca..."
-              action={
-                <button
-                  type="button"
-                  onClick={onNewBrand}
-                  className="text-primary-400 hover:text-primary-300 text-caption font-medium transition-colors"
-                >
-                  + Nueva
-                </button>
-              }
             />
           </div>
         </div>
@@ -138,7 +114,6 @@ export default function GeneralInfoStep({
 
       <FormActions
         onBack={onBack}
-        onSkip={onSaveDraft}
         onNext={onNext}
         nextDisabled={!canProceed}
       />

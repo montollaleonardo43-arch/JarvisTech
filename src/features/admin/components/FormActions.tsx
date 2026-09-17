@@ -3,10 +3,8 @@ import Button from '@/shared/components/ui/Button'
 
 interface FormActionsProps {
   onBack?: () => void
-  onSkip?: () => void
   onNext?: () => void
   backLabel?: string
-  skipLabel?: string
   nextLabel?: string
   nextDisabled?: boolean
   loading?: boolean
@@ -15,10 +13,8 @@ interface FormActionsProps {
 
 export default function FormActions({
   onBack,
-  onSkip,
   onNext,
   backLabel = 'Volver',
-  skipLabel = 'Guardar borrador',
   nextLabel = 'Siguiente',
   nextDisabled = false,
   loading = false,
@@ -30,11 +26,6 @@ export default function FormActions({
         {onBack && (
           <Button type="button" variant="ghost" onClick={onBack}>
             {backLabel}
-          </Button>
-        )}
-        {onSkip && (
-          <Button type="button" variant="secondary" onClick={onSkip}>
-            {skipLabel}
           </Button>
         )}
         {extra}

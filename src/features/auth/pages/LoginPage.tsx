@@ -1,11 +1,12 @@
-﻿import { useState, FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Lock, Mail, AlertCircle, Cpu } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { login } = useAuth()
@@ -17,8 +18,8 @@ export default function LoginPage() {
     setIsSubmitting(true)
 
     try {
-      await login(email, password)
-      navigate('/admin/dashboard')
+      const user = await login(email, password, rememberMe)
+      navigate(user.role === 'ADMIN' ? '/admin/dashboard' : '/account')
     } catch (err: unknown) {
       const apiError = err as { response?: { data?: { message?: string } } }
       setError(apiError.response?.data?.message || 'Credenciales invalidas')
@@ -39,15 +40,15 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-green-400 to-emerald-700 rounded-2xl mb-sm shadow-lg shadow-green-500/30">
             <Cpu size={30} className="text-white" />
           </div>
-          <h1 className="text-h2 text-white mb-sm">Jarvis Platform</h1>
+          <h1 className="text-h2 text-text-primary mb-sm">Jarvis Platform</h1>
           <p className="text-text-secondary">Panel de administracion</p>
         </div>
 
         <div className="glass-strong rounded-2xl p-xl">
-          <h2 className="text-h4 text-white mb-lg text-center">Iniciar sesion</h2>
+          <h2 className="text-h4 text-text-primary mb-lg text-center">Iniciar sesion</h2>
 
           {error && (
-            <div className="flex items-center gap-sm bg-rose-500/15 border border-rose-400/30 text-rose-300 rounded-xl p-md mb-lg text-small">
+            <div className="flex items-center gap-sm bg-rose-500/15 border border-rose-400/30 text-error rounded-xl p-md mb-lg text-small">
               <AlertCircle size={18} />
               {error}
             </div>
@@ -67,7 +68,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@jarvistechnology.cl"
                   required
-                  className="w-full glass-input rounded-xl py-3 pl-10 pr-4 text-white text-body placeholder:text-text-disabled"
+                  className="w-full glass-input rounded-xl py-3 pl-10 pr-4 text-text-primary text-body placeholder:text-text-disabled"
                 />
               </div>
             </div>
@@ -85,9 +86,27 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Tu contrasena"
                   required
-                  className="w-full glass-input rounded-xl py-3 pl-10 pr-4 text-white text-body placeholder:text-text-disabled"
+                  className="w-full glass-input rounded-xl py-3 pl-10 pr-4 text-text-primary text-body placeholder:text-text-disabled"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border border-white/15 bg-white/10 accent-emerald-600"
+                />
+                <span className="text-text-secondary text-small">Recordarme</span>
+              </label>
+              <Link
+                to="/forgot-password"
+                className="text-primary-300 hover:text-white text-small font-medium transition-colors"
+              >
+                ¿Olvidaste tu contrasena?
+              </Link>
             </div>
 
             <button
@@ -106,6 +125,13 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
+
+        <p className="text-center text-text-secondary text-small mt-lg">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-primary-300 hover:text-white font-medium">
+            Registrate aqui
+          </Link>
+        </p>
       </div>
     </div>
   )

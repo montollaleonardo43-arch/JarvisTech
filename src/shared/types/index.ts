@@ -94,6 +94,11 @@ export interface Image {
   displayOrder: number
 }
 
+export interface SiteBenefit {
+  title: string
+  description: string
+}
+
 export interface BusinessSettings {
   id: number
   businessName: string | null
@@ -117,6 +122,7 @@ export interface BusinessSettings {
   favicon: string | null
   heroImage: string | null
   heroDescription: string | null
+  benefits: SiteBenefit[] | null
 }
 
 export interface PaginatedResponse<T> {
