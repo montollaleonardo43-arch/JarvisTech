@@ -6,16 +6,22 @@ const ALLOWED_ORIGINS = [
   'https://jarvistechnology.cl',
 ]
 
+const VERCEL_APP_ORIGIN = /^https:\/\/[\w-]+\.vercel\.app$/
+
+function isAllowedOrigin(origin: string): boolean {
+  return ALLOWED_ORIGINS.includes(origin) || VERCEL_APP_ORIGIN.test(origin)
+}
+
 const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 const ALLOWED_HEADERS = ['Authorization', 'Content-Type', 'X-Requested-With', 'X-Cart-Id']
 
 export function proxy(request: NextRequest) {
   const origin = request.headers.get('origin') ?? ''
-  const isAllowedOrigin = ALLOWED_ORIGINS.includes(origin)
+  const allowed = isAllowedOrigin(origin)
 
   if (request.method === 'OPTIONS') {
     const response = new NextResponse(null, { status: 204 })
-    if (isAllowedOrigin) {
+    if (allowed) {
       response.headers.set('Access-Control-Allow-Origin', origin)
       response.headers.set('Access-Control-Allow-Credentials', 'true')
       response.headers.set('Access-Control-Allow-Methods', ALLOWED_METHODS.join(', '))
@@ -26,7 +32,7 @@ export function proxy(request: NextRequest) {
   }
 
   const response = NextResponse.next()
-  if (isAllowedOrigin) {
+  if (allowed) {
     response.headers.set('Access-Control-Allow-Origin', origin)
     response.headers.set('Access-Control-Allow-Credentials', 'true')
   }
