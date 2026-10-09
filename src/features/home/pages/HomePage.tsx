@@ -101,7 +101,7 @@ export default function HomePage() {
           </div>
           {featuredProducts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-lg">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md sm:gap-lg">
                 {featuredProducts.map((product, i) => (
                   <Link
                     key={product.id}
@@ -149,7 +149,7 @@ export default function HomePage() {
           </div>
           {featuredServices.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-lg">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md sm:gap-lg">
                 {featuredServices.map((service, i) => (
                   <Link
                     key={service.id}

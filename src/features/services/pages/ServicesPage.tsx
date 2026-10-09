@@ -29,7 +29,7 @@ export default function ServicesPage() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-lg">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md sm:gap-lg">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="glass rounded-xl p-lg animate-pulse">
                   <div className="w-12 h-12 bg-white/10 rounded-xl mb-md" />
@@ -47,13 +47,13 @@ export default function ServicesPage() {
               <p className="text-text-secondary text-body-large">No hay servicios disponibles aún.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-lg">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md sm:gap-lg">
                 {services.map((service, i) => (
                   <Link
                     key={service.id}
                     to={`/services/${service.id}`}
                     data-delay={(i % 4) + 1}
-                    className="reveal group glass rounded-xl p-lg hover:border-white/25 hover:-translate-y-1.5 transition-all duration-300"
+                    className="reveal group glass rounded-xl p-md sm:p-lg hover:border-white/25 hover:-translate-y-1.5 transition-all duration-300"
                   >
                   <div className="w-12 h-12 bg-gradient-to-tr from-green-500/30 to-emerald-700/30 border border-white/15 rounded-xl flex items-center justify-center mb-md">
                     <Wrench size={24} className="text-primary-300" />

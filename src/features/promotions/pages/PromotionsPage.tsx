@@ -30,7 +30,7 @@ export default function PromotionsPage() {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-md sm:gap-lg">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="glass rounded-xl p-lg animate-pulse">
                   <div className="h-6 bg-white/10 rounded w-1/3 mb-md" />
@@ -48,7 +48,7 @@ export default function PromotionsPage() {
               <p className="text-text-secondary">Vuelve pronto para descubrir nuestras ofertas.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-md sm:gap-lg">
               {promotions.map((promo, i) => (
                 <div
                   key={promo.id}
@@ -56,7 +56,7 @@ export default function PromotionsPage() {
                   className="reveal glass rounded-xl overflow-hidden hover:border-white/25 hover:-translate-y-1.5 transition-all duration-300"
                 >
                   <div className="h-2 bg-gradient-to-r from-green-500 via-emerald-500 to-green-400" />
-                  <div className="p-lg">
+                  <div className="p-md sm:p-lg">
                     <div className="flex items-start justify-between mb-md">
                       <div>
                         {promo.promotionType && (

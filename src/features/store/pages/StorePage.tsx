@@ -61,7 +61,7 @@ export default function StorePage() {
           </form>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-lg">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md sm:gap-lg">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="glass rounded-xl overflow-hidden animate-pulse">
                   <div className="w-full h-48 bg-white/10" />
@@ -87,7 +87,7 @@ export default function StorePage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-lg">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-md sm:gap-lg">
                 {products.map((product, i) => (
                   <div
                     key={product.id}
@@ -95,7 +95,7 @@ export default function StorePage() {
                     className="reveal group glass rounded-xl overflow-hidden hover:border-white/25 hover:-translate-y-1.5 transition-all duration-300 flex flex-col"
                   >
                     <Link to={`/store/${product.slug}`} className="block flex-1">
-                      <div className="w-full h-48 bg-white/5 flex items-center justify-center overflow-hidden">
+                      <div className="w-full h-36 sm:h-48 bg-white/5 flex items-center justify-center overflow-hidden">
                         {product.images.length > 0 ? (
                           <img
                             src={product.images[0]!.path}
