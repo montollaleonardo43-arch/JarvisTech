@@ -1,9 +1,8 @@
 ﻿import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Shield, Truck, Clock, MessageCircle, ShoppingCart, Check, Minus, Plus } from 'lucide-react'
+import { ArrowLeft, Shield, Truck, Clock, MessageCircle } from 'lucide-react'
 import { storeApi } from '../services/storeApi'
 import { useBusinessSettings, getWhatsappUrl } from '@/shared/hooks/useBusinessSettings'
-import { useCart } from '@/features/cart/hooks/useCart'
 import { useRevealOnScroll } from '@/shared/hooks/useRevealOnScroll'
 import type { Product } from '@/shared/types'
 
@@ -12,12 +11,8 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
-  const [quantity, setQuantity] = useState(1)
-  const [adding, setAdding] = useState(false)
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const settings = useBusinessSettings()
   const whatsappUrl = getWhatsappUrl(settings)
-  const { addItem } = useCart()
   useRevealOnScroll([product !== null])
 
   useEffect(() => {
@@ -26,28 +21,10 @@ export default function ProductDetailPage() {
     storeApi.getBySlug(slug)
       .then(({ data }) => {
         setProduct(data)
-        setQuantity(1)
-        setFeedback(null)
       })
       .catch(() => setProduct(null))
       .finally(() => setLoading(false))
   }, [slug])
-
-  const handleAddToCart = async () => {
-    if (!product) return
-    setAdding(true)
-    setFeedback(null)
-    try {
-      await addItem(product.id, quantity)
-      setFeedback({ type: 'success', message: `${quantity} unidad${quantity > 1 ? 'es' : ''} agregada${quantity > 1 ? 's' : ''} al carrito` })
-      window.setTimeout(() => setFeedback(null), 3000)
-    } catch (err) {
-      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'No se pudo agregar el producto al carrito'
-      setFeedback({ type: 'error', message })
-    } finally {
-      setAdding(false)
-    }
-  }
 
   if (loading) {
     return (
@@ -159,60 +136,6 @@ export default function ProductDetailPage() {
               </div>
 
               <p className="text-text-tertiary text-xs mb-lg">SKU: {product.sku}</p>
-
-              {feedback && (
-                <div
-                  className={`flex items-center gap-2 rounded-xl px-md py-sm text-sm mb-md animate-fade-up ${
-                    feedback.type === 'success'
-                      ? 'bg-emerald-500/15 border border-emerald-400/30 text-emerald-300'
-                      : 'bg-rose-500/15 border border-rose-400/30 text-rose-300'
-                  }`}
-                >
-                  {feedback.type === 'success' && <Check size={16} />}
-                  {feedback.message}
-                </div>
-              )}
-
-              <div className="flex items-center gap-2 mb-lg">
-                <span className="text-text-secondary text-sm mr-2">Cantidad</span>
-                <button
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl glass text-text-secondary hover:text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Disminuir cantidad"
-                >
-                  <Minus size={16} />
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  max={product.stock}
-                  value={quantity}
-                  onChange={(e) => {
-                    const parsed = parseInt(e.target.value, 10)
-                    setQuantity(isNaN(parsed) ? 1 : Math.max(1, Math.min(parsed, product.stock)))
-                  }}
-                  className="w-14 text-center glass-input rounded-xl py-2 text-white text-sm"
-                  aria-label="Cantidad"
-                />
-                <button
-                  onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                  disabled={quantity >= product.stock}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl glass text-text-secondary hover:text-white hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Aumentar cantidad"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-
-              <button
-                onClick={handleAddToCart}
-                disabled={adding || product.stock <= 0}
-                className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-400 to-emerald-700 hover:from-green-300 hover:to-emerald-700 text-white py-3.5 px-8 rounded-xl font-medium transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 mb-md"
-              >
-                <ShoppingCart size={20} />
-                {product.stock <= 0 ? 'Sin stock' : adding ? 'Agregando...' : 'Agregar al carrito'}
-              </button>
 
               {whatsappUrl && (
                 <a

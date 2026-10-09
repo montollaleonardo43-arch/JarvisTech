@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { jsonOk, apiOk, withApi } from '@/lib/http'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import type { BusinessSettingsResponseShape } from '@/services/businessSettings'
 import * as businessSettingsService from '@/services/businessSettings'
 
@@ -13,7 +13,7 @@ export const GET = withApi(async () => {
 })
 
 export const PUT = withApi(async (request: NextRequest) => {
-  await requireAuth(request)
+  await requireAdmin(request)
   const body = (await request.json()) as Partial<BusinessSettingsResponseShape>
   const result = await businessSettingsService.update(body)
   return apiOk('Configuracion actualizada exitosamente', result)

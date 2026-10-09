@@ -1,8 +1,7 @@
 ﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, ShoppingCart, Check, PackageOpen } from 'lucide-react'
+import { Search, PackageOpen } from 'lucide-react'
 import { storeApi } from '../services/storeApi'
-import { useCart } from '@/features/cart/hooks/useCart'
 import { useRevealOnScroll } from '@/shared/hooks/useRevealOnScroll'
 import type { Product } from '@/shared/types'
 
@@ -13,9 +12,6 @@ export default function StorePage() {
   const [totalPages, setTotalPages] = useState(1)
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
-  const [addingId, setAddingId] = useState<number | null>(null)
-  const [justAddedId, setJustAddedId] = useState<number | null>(null)
-  const { addItem } = useCart()
   useRevealOnScroll([products.length, loading])
 
   useEffect(() => {
@@ -37,18 +33,6 @@ export default function StorePage() {
     e.preventDefault()
     setPage(0)
     setSearch(searchInput)
-  }
-
-  const handleAdd = async (product: Product) => {
-    setAddingId(product.id)
-    try {
-      await addItem(product.id, 1)
-      setJustAddedId(product.id)
-      window.setTimeout(() => {
-        setJustAddedId((prev) => (prev === product.id ? null : prev))
-      }, 1500)
-    } catch { /* empty */ }
-    setAddingId(null)
   }
 
   return (
@@ -130,7 +114,7 @@ export default function StorePage() {
                         <p className="text-text-secondary text-xs mb-md line-clamp-2">{product.shortDescription}</p>
                       </div>
                     </Link>
-                    <div className="p-md flex items-center justify-between gap-2">
+                    <div className="p-md">
                       <div className="flex flex-col">
                         {product.offerPrice ? (
                           <>
@@ -141,23 +125,6 @@ export default function StorePage() {
                           <span className="text-primary-300 font-semibold">${product.price.toLocaleString()}</span>
                         )}
                       </div>
-                      <button
-                        onClick={() => handleAdd(product)}
-                        disabled={addingId === product.id || product.stock <= 0}
-                        className={`flex items-center gap-1.5 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                          justAddedId === product.id
-                            ? 'bg-emerald-500 shadow shadow-emerald-500/25'
-                            : 'bg-gradient-to-r from-green-400 to-emerald-700 hover:from-green-300 hover:to-emerald-700 shadow shadow-green-500/25'
-                        }`}
-                        aria-label={`Agregar ${product.name} al carrito`}
-                      >
-                        {justAddedId === product.id ? (
-                          <Check size={16} />
-                        ) : (
-                          <ShoppingCart size={16} />
-                        )}
-                        {product.stock <= 0 ? 'Sin stock' : justAddedId === product.id ? 'Agregado' : 'Agregar'}
-                      </button>
                     </div>
                   </div>
                 ))}

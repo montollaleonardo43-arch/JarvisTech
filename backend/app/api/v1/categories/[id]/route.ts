@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { jsonOk, apiOk, withApi } from '@/lib/http'
 import { validate, categoryRequest } from '@/lib/validators'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import * as categoryService from '@/services/categories'
 
 export const dynamic = 'force-dynamic'
@@ -14,7 +14,7 @@ export const GET = withApi(async (_request: NextRequest, ctx: { params: Promise<
 })
 
 export const PUT = withApi(async (request: NextRequest, ctx: { params: Promise<{ id: string }> }) => {
-  await requireAuth(request)
+  await requireAdmin(request)
   const { id } = await ctx.params
   const input = validate(categoryRequest, await request.json())
   const result = await categoryService.update(Number(id), input)
@@ -22,7 +22,7 @@ export const PUT = withApi(async (request: NextRequest, ctx: { params: Promise<{
 })
 
 export const DELETE = withApi(async (request: NextRequest, ctx: { params: Promise<{ id: string }> }) => {
-  await requireAuth(request)
+  await requireAdmin(request)
   const { id } = await ctx.params
   await categoryService.deactivate(Number(id))
   return apiOk('Categoria desactivada exitosamente', null)

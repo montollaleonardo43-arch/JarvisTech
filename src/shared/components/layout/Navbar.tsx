@@ -1,10 +1,9 @@
 ﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, Search, MessageCircle, ShoppingCart } from 'lucide-react'
+import { Menu, X, Search, MessageCircle } from 'lucide-react'
 import { useBusinessSettings, getWhatsappUrl } from '@/shared/hooks/useBusinessSettings'
 import { storeApi } from '@/features/store/services/storeApi'
 import { servicesApi } from '@/features/services/services/publicServicesApi'
-import { useCart } from '@/features/cart/hooks/useCart'
 import type { Product, Service } from '@/shared/types'
 
 const navLinks = [
@@ -28,7 +27,6 @@ export default function Navbar() {
   const navigate = useNavigate()
   const settings = useBusinessSettings()
   const whatsappUrl = getWhatsappUrl(settings, '#')
-  const { itemCount } = useCart()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -129,24 +127,6 @@ export default function Navbar() {
           >
             <Search size={20} />
           </button>
-          <Link
-            to="/cart"
-            className="relative p-2.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            aria-label="Carrito de compras"
-          >
-            <ShoppingCart size={20} />
-            {itemCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-emerald-700 text-white text-[10px] font-bold shadow shadow-green-500/40">
-                {itemCount > 99 ? '99+' : itemCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            to="/admin/login"
-            className="text-text-tertiary hover:text-text-secondary text-caption transition-colors"
-          >
-            Mi Cuenta
-          </Link>
           <a
             href={whatsappUrl}
             target="_blank"
@@ -159,18 +139,6 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3 laptop:hidden">
-          <Link
-            to="/cart"
-            className="relative text-text-secondary"
-            aria-label="Carrito de compras"
-          >
-            <ShoppingCart size={24} />
-            {itemCount > 0 && (
-              <span className="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-emerald-700 text-white text-[10px] font-bold shadow">
-                {itemCount > 99 ? '99+' : itemCount}
-              </span>
-            )}
-          </Link>
           <a
             href={whatsappUrl}
             target="_blank"
@@ -206,9 +174,6 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <Link to="/admin/login" className="block py-3 text-sm font-medium text-text-tertiary">
-              Mi Cuenta
-            </Link>
           </div>
         </div>
       )}

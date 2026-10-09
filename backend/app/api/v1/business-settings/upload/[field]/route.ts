@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 import { NextRequest } from 'next/server'
 import { apiOk, jsonOk, withApi } from '@/lib/http'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { ensureBucket, uploadFile } from '@/lib/supabase'
 import * as businessSettingsService from '@/services/businessSettings'
 
@@ -11,7 +11,7 @@ export const runtime = 'nodejs'
 const ALLOWED_FIELDS = new Set(['logoLight', 'heroImage'])
 
 export const POST = withApi(async (request: NextRequest, ctx: { params: Promise<{ field: string }> }) => {
-  await requireAuth(request)
+  await requireAdmin(request)
   const { field } = await ctx.params
 
   if (!ALLOWED_FIELDS.has(field)) {

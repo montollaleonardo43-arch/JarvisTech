@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server'
 import { apiOk, withApi } from '@/lib/http'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import * as imageService from '@/services/images'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 async function parseUpload(request: NextRequest) {
-  await requireAuth(request)
+  await requireAdmin(request)
   const formData = await request.formData()
   const file = formData.get('file')
   if (!(file instanceof File)) {

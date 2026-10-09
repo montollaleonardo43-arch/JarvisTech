@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import type { users, roles } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import { verifyToken } from '@/lib/jwt'
-import { notAuthenticated } from '@/lib/errors'
+import { forbidden, notAuthenticated } from '@/lib/errors'
 
 export type AuthUser = users & { roles: roles }
 
@@ -23,6 +23,14 @@ export async function requireAuth(request: NextRequest): Promise<AuthUser> {
   const user = await getAuthUser(request)
   if (!user) {
     throw notAuthenticated(new URL(request.url).pathname)
+  }
+  return user
+}
+
+export async function requireAdmin(request: NextRequest): Promise<AuthUser> {
+  const user = await requireAuth(request)
+  if (user.roles.name !== 'ADMIN') {
+    throw forbidden(new URL(request.url).pathname)
   }
   return user
 }
