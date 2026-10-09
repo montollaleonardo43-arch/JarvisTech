@@ -1,7 +1,8 @@
 ﻿import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Clock, Shield, CheckCircle, Wrench } from 'lucide-react'
+import { ArrowLeft, Clock, Shield, CheckCircle, Wrench, MessageCircle } from 'lucide-react'
 import { servicesApi } from '../services/publicServicesApi'
+import { getWhatsappUrl, useBusinessSettings } from '@/shared/hooks/useBusinessSettings'
 import { useRevealOnScroll } from '@/shared/hooks/useRevealOnScroll'
 import type { Service } from '@/shared/types'
 
@@ -9,6 +10,8 @@ export default function ServiceDetailPage() {
   const { id } = useParams()
   const [service, setService] = useState<Service | null>(null)
   const [loading, setLoading] = useState(true)
+  const settings = useBusinessSettings()
+  const whatsappUrl = getWhatsappUrl(settings)
   useRevealOnScroll([service !== null])
 
   useEffect(() => {
@@ -126,6 +129,18 @@ export default function ServiceDetailPage() {
                   </div>
                 )}
               </div>
+
+              {whatsappUrl && (
+                <a
+                  href={`${whatsappUrl}?text=${encodeURIComponent(`Hola, me interesa el servicio "${service.name}". Quisiera más información.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-white py-3.5 px-8 rounded-xl font-medium transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25"
+                >
+                  <MessageCircle size={20} />
+                  Consultar por WhatsApp
+                </a>
+              )}
             </div>
           </div>
         </div>
